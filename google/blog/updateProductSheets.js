@@ -10,23 +10,47 @@ function updateProductSheets() {
   const lastRow = original.getLastRow();
   if (lastRow < 3) return;
 
-  const productsRange = original.getRange(`A3:A${lastRow}`);
-  const viewsRange = original.getRange(`E3:E${lastRow}`);
-  const visibleRange = original.getRange(`F3:F${lastRow}`);
-  const blockRange = original.getRange(`G3:G${lastRow}`);
-  const keywordsRange = original.getRange(`B3:B${lastRow}`);
+  const productsRaw = original.getRange(`A3:A${lastRow}`).getValues();
+  const views = original.getRange(`E3:E${lastRow}`).getValues();
+  const visibles = original.getRange(`F3:F${lastRow}`).getValues();
+  const blocks = original.getRange(`G3:G${lastRow}`).getValues();
+  const keywordsRaw = original.getRange(`B3:B${lastRow}`).getValues();
 
-  const products = productsRange.getValues(); // [[val],...]
-  const views = viewsRange.getValues();
-  const visibles = visibleRange.getValues();
-  const blocks = blockRange.getValues();
-  const keywordsRaw = keywordsRange.getValues();
+  const rawProductsArr = [
+    "조인트리션",
+    "블러드",
+    "비타민",
+    "칼슘앱솔브",
+    "이트뮨",
+    "지니어스뉴",
+    "투데이",
+  ];
+  const refineProductsArr = [
+    "조인트리션",
+    "블러드플로우케어",
+    "비타민D3",
+    "인-칼슘앱솔브",
+    "이트뮨",
+    "지니어스뉴",
+    "투데이D3",
+  ];
+  const products = productsRaw.map((row) => {
+    let refineP = row[0] || "";
+    rawProductsArr.some((p, i) => {
+      if (refineP.includes(p)) {
+        refineP = refineProductsArr[i];
+        return true; // stop loop
+      }
+      return false;
+    });
+    return [refineP];
+  });
 
-  // Normalize keywords in-place (uppercased) and write them back once
   const keywords = keywordsRaw.map((row) => {
     const k = (row[0] || "").toString();
     return [k.toUpperCase()];
   });
+
   original.getRange(`B3:B${lastRow}`).setValues(keywords);
 
   // Priority sheet values
