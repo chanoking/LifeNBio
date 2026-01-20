@@ -1,5 +1,8 @@
 Attribute VB_Name = "AddDailyValue"
 Sub AddDailyValue()
+    ' 설정 초기화
+    If IsEmpty(Block_Range) Then InitConfig
+    
     Dim wsSummary As Worksheet, wsView_raw As Worksheet
     Dim itemRows, brandRows, key, view, rangeArr
     Dim dict As Object
@@ -31,8 +34,8 @@ Sub AddDailyValue()
     
     For r = 5 To lastRow
         key = wsSummary.Cells(r, "A").Value
-        If Not includes(itemRows, r) And Not includes(brandRows, r) Then
-            If Not dict.exists(key) Then
+        If Not Includes(r, 1) Then
+            If Not dict.Exists(key) Then
                 wsSummary.Cells(r, "B").Value = 10
             Else
                 wsSummary.Cells(r, "B").Value = dict(key)
@@ -45,7 +48,7 @@ Sub AddDailyValue()
             wsSummary.Cells(itemRows(i), "B").Value = wsSummary.Cells(rangeArr(i), "B").Value
             acc = acc + wsSummary.Cells(rangeArr(i), "B").Value
         Else
-            wsSummary.Cells(itemRows(i), "B").Value = sum(wsSummary.Range(rangeArr(i)).Value)
+            wsSummary.Cells(itemRows(i), "B").Value = SumArr(wsSummary.Range(rangeArr(i)).Value)
             acc = acc + wsSummary.Cells(itemRows(i), "B").Value
         Select Case itemRows(i)
             Case 82: wsSummary.Cells(3, "B").Value = acc: acc = 0
@@ -65,29 +68,4 @@ Sub AddDailyValue()
     
     MsgBox "Carried out what you asked!"
 
-    
 End Sub
-
-Function sum(arr) As Long
-    Dim i As Long, result As Long
-    
-    For i = LBound(arr) To UBound(arr)
-        result = result + arr(i, 1)
-    Next i
-    
-    sum = result
-    
-End Function
-
-Function includes(arr, target) As Boolean
-    Dim i As Long
-    
-    For i = LBound(arr) To UBound(arr)
-        If target = arr(i) Then
-            includes = True
-            Exit Function
-        End If
-    Next i
-    
-    includes = False
-End Function

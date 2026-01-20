@@ -1,5 +1,9 @@
-Sub cal2()
+Attribute VB_Name = "RateOfChange"
+Sub RateOfChange()
 
+    ' º≥¡§ √ ±‚»≠
+    If IsEmpty(Block_Range) Then InitConfig
+    
     Dim ws As Worksheet, wsSource As Worksheet, wsSummary As Worksheet
     Dim dict As Object, weekObj As Object, monthObj As Object
     Dim r As Long, c As Long
@@ -9,36 +13,36 @@ Sub cal2()
     Dim d As Date
 
     Set ws = ThisWorkbook.Sheets("Rate of change")
-    Set wsSource = ThisWorkbook.Sheets("rank_raw")
+    Set wsSource = ThisWorkbook.Sheets("view_raw")
     Set wsSummary = ThisWorkbook.Sheets("Summary")
 
     Set dict = CreateObject("Scripting.Dictionary")
 
     '--------------------------------
-    ' rank_raw ‚Üí Dictionary
+    ' rank_raw °Ê Dictionary
     '--------------------------------
     lastRow = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
 
     For r = 2 To lastRow
         key = wsSource.Cells(r, "A").Value
         view = wsSource.Cells(r, "B").Value
-        If Not dict.exists(key) Then dict.add key, view
+        If Not dict.Exists(key) Then dict.add key, view
     Next r
 
     '--------------------------------
-    ' Ïù¥Ï†ÑÍ∞í Î≥µÏÇ¨
+    ' ¿Ã¿¸∞™ ∫πªÁ
     '--------------------------------
     lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
     ws.Range("B2:B" & lastRow).Value = ws.Range("C2:C" & lastRow).Value
 
     '--------------------------------
-    ' ÌòÑÏû¨Í∞í + Î≥ÄÌôîÏú®
+    ' «ˆ¿Á∞™ + ∫Ø»≠¿≤
     '--------------------------------
     For r = 8 To lastRow
         key = ws.Cells(r, "A").Value
 
-        If Not isInclude(r, 1) And key <> "" Then
-            If dict.exists(key) Then
+        If Not Includes(r, 2) And key <> "" Then
+            If dict.Exists(key) Then
                 ws.Cells(r, "C").Value = dict(key)
             Else
                 ws.Cells(r, "C").Value = 10
@@ -49,13 +53,13 @@ Sub cal2()
     Next r
 
     '--------------------------------
-    ' Í∞í Î≥µÏÇ¨
+    ' ∞™ ∫πªÁ
     '--------------------------------
     ws.Range("G2:G" & lastRow).Value = ws.Range("C2:C" & lastRow).Value
     ws.Range("K2:K" & lastRow).Value = ws.Range("C2:C" & lastRow).Value
 
     '--------------------------------
-    ' Summary Ï≤òÎ¶¨
+    ' Summary √≥∏Æ
     '--------------------------------
     Set weekObj = CreateObject("Scripting.Dictionary")
     Set monthObj = CreateObject("Scripting.Dictionary")
@@ -72,26 +76,26 @@ Sub cal2()
         If Int(d) = Int(aWeekAgo) Then
             For r = 5 To lastRow
                 key = wsSummary.Cells(r, "A").Value
-                If Not isInclude(r, 2) Then weekObj(key) = wsSummary.Cells(r, c).Value
+                If Not Includes(r, 1) Then weekObj(key) = wsSummary.Cells(r, c).Value
             Next r
         End If
 
         If Int(d) = Int(aMonthAgo) Then
             For r = 5 To lastRow
                 key = wsSummary.Cells(r, "A").Value
-                If Not isInclude(r, 2) Then monthObj(key) = wsSummary.Cells(r, c).Value
+                If Not Includes(r, 1) Then monthObj(key) = wsSummary.Cells(r, c).Value
             Next r
             Exit For
         End If
     Next c
 
     '--------------------------------
-    ' Ï£ºÍ∞Ñ / ÏõîÍ∞Ñ Î≥ÄÌôîÏú®
+    ' ¡÷∞£ / ø˘∞£ ∫Ø»≠¿≤
     '--------------------------------
     For r = 8 To ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
         key = ws.Cells(r, "A").Value
 
-        If Not isInclude(r, 1) And key <> "" Then
+        If Not Includes(r, 2) And key <> "" Then
             ws.Cells(r, "F").Value = weekObj(key)
             ws.Cells(r, "J").Value = monthObj(key)
 
@@ -101,62 +105,53 @@ Sub cal2()
     Next r
 
     '--------------------------------
-    ' Ìï©Í≥Ñ Í≥ÑÏÇ∞
+    ' «’∞Ë ∞ËªÍ
     '--------------------------------
     Dim itemRows, ranges, applyColumns, values
     Dim i As Long, j As Long
 
-    itemRows = Array(7, 11, 15, 20, 27, 33, 39, 47, 52, 56, 61, 66, 71, 76, _
-                     79, 82, 86, 93, 97, 104, 117, 131, 135, 142)
-
-    ranges = Array("A8:A9", "A12:A13", "A16:A18", "A21:A25", "A28:A31", _
-                   "A34:A37", "A40:A45", "A48:A50", "A53:A54", "A57:A59", _
-                   "A62:A64", "A67:A69", "A72:A74", "A77:A77", "A80:A80", _
-                   "A83:A84", "A87:A91", "A94:A95", "A98:A102", "A105:A112", _
-                    "A118:A129", "A132:A133", "A136:A137", "A143:A147")
-
-    applyColumns = Array("B", "C", "F", "G", "J", "K")
+    applyColumns = Array("C", "F", "G", "J", "K")
 
     For i = LBound(applyColumns) To UBound(applyColumns)
         add = 0
-        For j = LBound(itemRows) To UBound(itemRows)
+        For j = LBound(Item_Rows) To UBound(Item_Rows)
 
             If j = 13 Or j = 14 Then
-                ws.Cells(itemRows(j), applyColumns(i)).Value = _
-                    ws.Range(Replace(ranges(j), "A", applyColumns(i))).Value
+                ws.Cells(Item_Rows(j), applyColumns(i)).Value = _
+                    ws.Range(Replace(Block_Range(j), "A", applyColumns(i))).Value
             Else
-                values = ws.Range(Replace(ranges(j), "A", applyColumns(i))).Value
-                ws.Cells(itemRows(j), applyColumns(i)).Value = SumArray(values)
+                values = ws.Range(Replace(Block_Range(j), "A", applyColumns(i))).Value
+                ws.Cells(Item_Rows(j), applyColumns(i)).Value = SumArr(values)
             End If
 
-            add = add + ws.Cells(itemRows(j), applyColumns(i)).Value
+            add = add + ws.Cells(Item_Rows(j), applyColumns(i)).Value
 
-            Select Case itemRows(j)
-                Case 103
+            Select Case Item_Rows(j)
+                Case 104
                     ws.Cells(5, applyColumns(i)).Value = add: add = 0
-                Case 134
-                    ws.Cells(114, applyColumns(i)).Value = add: add = 0
-                Case 141
-                    ws.Cells(139, applyColumns(i)).Value = add
+                Case 135
+                    ws.Cells(115, applyColumns(i)).Value = add: add = 0
+                Case 142
+                    ws.Cells(140, applyColumns(i)).Value = add
                     ws.Cells(2, applyColumns(i)).Value = _
                         ws.Cells(5, applyColumns(i)).Value + _
-                        ws.Cells(114, applyColumns(i)).Value + _
-                        ws.Cells(139, applyColumns(i)).Value
+                        ws.Cells(115, applyColumns(i)).Value + _
+                        ws.Cells(140, applyColumns(i)).Value
             End Select
         Next j
     Next i
 
     '--------------------------------
-    ' Ìï©Í≥Ñ Î≥ÄÌôîÏú®
+    ' «’∞Ë ∫Ø»≠¿≤
     '--------------------------------
-    For i = LBound(itemRows) To UBound(itemRows)
-        SetRate ws.Cells(itemRows(i), "D"), ws.Cells(itemRows(i), "C"), ws.Cells(itemRows(i), "B")
-        SetRate ws.Cells(itemRows(i), "H"), ws.Cells(itemRows(i), "G"), ws.Cells(itemRows(i), "F")
-        SetRate ws.Cells(itemRows(i), "L"), ws.Cells(itemRows(i), "K"), ws.Cells(itemRows(i), "J")
+    For i = LBound(Item_Rows) To UBound(Item_Rows)
+        SetRate ws.Cells(Item_Rows(i), "D"), ws.Cells(Item_Rows(i), "C"), ws.Cells(Item_Rows(i), "B")
+        SetRate ws.Cells(Item_Rows(i), "H"), ws.Cells(Item_Rows(i), "G"), ws.Cells(Item_Rows(i), "F")
+        SetRate ws.Cells(Item_Rows(i), "L"), ws.Cells(Item_Rows(i), "K"), ws.Cells(Item_Rows(i), "J")
     Next i
 
     '--------------------------------
-    ' Î∏åÎûúÎìú ÏöîÏïΩ
+    ' ∫Í∑£µÂ ø‰æ‡
     '--------------------------------
     Dim brandRows, combine, rowNum, a, b, t
 
@@ -218,55 +213,3 @@ Sub SetRate(targetCell As Range, curVal As Double, prevVal As Double)
 
     ApplyRateStyle targetCell
 End Sub
-
-
-Function SumArray(arr As Variant) As Double
-    Dim i As Long, acc As Double
-    For i = LBound(arr) To UBound(arr)
-        acc = acc + arr(i, 1)
-    Next i
-    SumArray = acc
-End Function
-Function isInclude(target As Long, version As Long) As Boolean
-
-    Dim i As Long
-    Dim itemsRows As Variant
-
-    If version = 1 Then
-
-        itemsRows = Array( _
-            11, 15, 20, 27, 33, 39, 47, 52, 56, 61, _
-            66, 71, 76, 79, 82, 86, 93, 97, _
-            104, 115, 117, 131, 135, 140, 142 _
-        )
-
-        For i = LBound(itemsRows) To UBound(itemsRows)
-            If target = itemsRows(i) Then
-                isInclude = True
-                Exit Function
-            End If
-        Next i
-
-        isInclude = False
-
-    Else
-
-        itemsRows = Array( _
-            7, 10, 14, 20, 25, 30, 37, 41, 44, 48, _
-            52, 56, 60, 62, 64, 67, 73, 76, _
-            82, 91, 92, 105, 108, 111, 112 _
-        )
-
-        For i = LBound(itemsRows) To UBound(itemsRows)
-            If target = itemsRows(i) Then
-                isInclude = True
-                Exit Function
-            End If
-        Next i
-
-        isInclude = False
-
-    End If
-
-End Function
-
