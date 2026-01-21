@@ -61,7 +61,7 @@ Sub WeekAvg()
             key = wsWeekAvg.Cells(r, "A").Value
             rng = a & r & ":" & b & r
             If key <> "" And Not Includes(r, 2) Then
-                If dict.Exists(key) Then
+                If dict.exists(key) Then
                     wsWeekAvg.Range(rng).Value = dict(key)
                 Else
                     wsWeekAvg.Range(rng).Value = 10
@@ -89,17 +89,22 @@ Sub WeekAvg()
             accA = accA + wsWeekAvg.Cells(Item_Rows(i), a).Value
             accB = accB + wsWeekAvg.Cells(Item_Rows(i), b).Value
         
-            Select Case Item_Rows(i)
-            Case 104
-                wsWeekAvg.Cells(5, a).Value = accA: accA = 0
-                wsWeekAvg.Cells(5, b).Value = accB: accB = 0
-            Case 135
-                wsWeekAvg.Cells(115, a).Value = accA: accA = 0
-                wsWeekAvg.Cells(115, b).Value = accB: accB = 0
-            Case 142
-                wsWeekAvg.Cells(140, a).Value = accA: accA = 0
-                wsWeekAvg.Cells(140, b).Value = accB: accB = 0
-            End Select
+            'Select Case Item_Rows(i)
+            'Case 104
+            '    wsWeekAvg.Cells(5, a).Value = accA: accA = 0
+            '    wsWeekAvg.Cells(5, b).Value = accB: accB = 0
+            'Case 135
+            '    wsWeekAvg.Cells(115, a).Value = accA: accA = 0
+            '    wsWeekAvg.Cells(115, b).Value = accB: accB = 0
+            'Case 142
+            '    wsWeekAvg.Cells(140, a).Value = accA: accA = 0
+            '    wsWeekAvg.Cells(140, b).Value = accB: accB = 0
+            'End Select
+            
+            Call Select_Case(Item_Rows(i), wsWeekAvg, accA, a)
+            accA = 0
+            Call Select_Case(Item_Rows(i), wsWeekAvg, accB, b)
+            accB = 0
         Next i
 
         wsWeekAvg.Cells(2, a).Value = wsWeekAvg.Cells(115, a).Value + wsWeekAvg.Cells(140, a).Value _

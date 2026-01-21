@@ -12,12 +12,14 @@ Sub InitConfig()
                      79, 82, 86, 93, 97, 104, 117, 131, 135, 142)
 End Sub
 
-Public Function SumArr(arr As Variant) As Long
+Public Function SumArr(arr As Variant) As Double
     Dim i As Long
-    Dim aggregate As Long
+    Dim aggregate As Double
     
     For i = LBound(arr) To UBound(arr)
+        'Debug.Print aggregate
         aggregate = aggregate + arr(i, 1)
+        'Debug.Print arr(i, 1), aggregate
     Next i
     
     SumArr = aggregate
@@ -46,10 +48,45 @@ Public Function Includes(target As Long, num As Long) As Boolean
     End If
     
     If num = 1 Then
-        Includes = dictA.Exists(target)
+        Includes = dictA.exists(target)
     Else
-        Includes = dictB.Exists(target)
+        Includes = dictB.exists(target)
     End If
 End Function
-
-
+Public Sub FormatPainting_Common(targetCell As Range, val As Double)
+    If val > 0 Then
+        With targetCell
+            .Interior.Color = RGB(255, 200, 200)
+            .Font.Bold = True
+        End With
+    ElseIf val < 0 Then
+        With targetCell
+            .Interior.Color = RGB(214, 233, 255)
+            .Font.Bold = True
+        End With
+    Else
+        With targetCell
+            .Interior.Color = RGB(235, 235, 235)
+            .Font.Bold = True
+        End With
+    End If
+End Sub
+Public Sub Select_Case(rowNum As Long, ws As Worksheet, acc As Double, col As String)
+    Select Case rowNum
+    Case 104
+        ws.Cells(5, col).Value = acc
+        Call FormatPainting_Common(ws.Cells(5, col), acc)
+    Case 135
+        ws.Cells(115, col).Value = acc
+        Call FormatPainting_Common(ws.Cells(115, col), acc)
+    Case 142
+        ws.Cells(140, col).Value = acc
+        Call FormatPainting_Common(ws.Cells(140, col), acc)
+    End Select
+    
+    If rowNum = 142 Then
+        ws.Cells(2, col).Value = ws.Cells(5, col).Value + ws.Cells(115, col).Value _
+                                    + ws.Cells(140, col).Value
+        Call FormatPainting_Common(ws.Cells(2, col), ws.Cells(2, col).Value)
+    End If
+End Sub
