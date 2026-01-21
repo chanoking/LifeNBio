@@ -110,6 +110,15 @@ Sub WeekAvg()
         
     Next ii
     
+    For r = 2 To lastRow
+        If wsWeekAvg.Cells(r, "A").Value <> "" Then
+            wsWeekAvg.Cells(r, "H").Value = wsWeekAvg.Cells(r, "B").Value - wsWeekAvg.Cells(r, "E").Value
+            wsWeekAvg.Cells(r, "I").Value = wsWeekAvg.Cells(r, "C").Value - wsWeekAvg.Cells(r, "F").Value
+            wsWeekAvg.Cells(r, "K").Value = Round(wsWeekAvg.Cells(r, "H").Value / wsWeekAvg.Cells(r, "B").Value, 2) * 100 & "%"
+            wsWeekAvg.Cells(r, "L").Value = Round(wsWeekAvg.Cells(r, "I").Value / wsWeekAvg.Cells(r, "C").Value, 2) * 100 & "%"
+        End If
+    Next r
+    
     
     MsgBox "Carried out what you asked!"
 End Sub
