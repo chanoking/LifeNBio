@@ -116,6 +116,14 @@ Sub WeekAvg()
             wsWeekAvg.Cells(r, "I").Value = wsWeekAvg.Cells(r, "C").Value - wsWeekAvg.Cells(r, "F").Value
             wsWeekAvg.Cells(r, "K").Value = Round((wsWeekAvg.Cells(r, "H").Value / wsWeekAvg.Cells(r, "B").Value) * 100, 2) & "%"
             wsWeekAvg.Cells(r, "L").Value = Round((wsWeekAvg.Cells(r, "I").Value / wsWeekAvg.Cells(r, "C").Value) * 100, 2) & "%"
+            
+            If wsWeekAvg.Cells(r, "L").Value > 0 Then
+                wsWeekAvg.Cells(r, "L").Interior.Color = RGB(248, 215, 218)
+            ElseIf wsWeekAvg.Cells(r, "L").Value < 0 Then
+                wsWeekAvg.Cells(r, "L").Interior.Color = RGB(214, 233, 255)
+            Else
+                wsWeekAvg.Cells(r, "L").Interior.Color = RGB(242, 242, 242)
+            End If
         End If
     Next r
     
