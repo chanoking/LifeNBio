@@ -30,11 +30,13 @@ function dailySummary() {
   let totalKeywords = 0,
     totalViews = 0;
 
+  summary.insertColumnBefore(2);
+
   sheetNames.forEach((name) => {
     const sheet = ss.getSheetByName(name);
     if (!sheet) return;
 
-    const gValues = sheet.getRange(1, 7, 2, 1).getValues().flat(); // G1:G2
+    const gValues = sheet.getRange(1, 8, 2, 1).getValues().flat(); // G1:G2
     const lastColValues = sheet
       .getRange(1, sheet.getLastColumn(), 2, 1)
       .getValues()
@@ -43,28 +45,29 @@ function dailySummary() {
     const [keyword, view, sKey, sView] = [...gValues, ...lastColValues];
 
     summary
-      .getRange(firstRow, lastCol + 1, 4, 1)
+      .getRange(firstRow, 2, 4, 1)
       .setValues([[keyword], [view], [sKey], [sView]]);
 
-    (totalKeywords += sKey), (totalViews += sView);
+    ((totalKeywords += sKey), (totalViews += sView));
 
     firstRow += 5;
   });
 
   const rawDate = new Date();
+  rawDate.setDate(rawDate.getDate() - 1);
   const formatted = Utilities.formatDate(
     rawDate,
     Session.getScriptTimeZone(),
-    "MM/dd"
+    "MM/dd",
   );
 
   summary
-    .getRange(1, lastCol + 1, 3, 1)
+    .getRange(1, 2, 3, 1)
     .setValues([[formatted], [totalKeywords], [totalViews]]);
 
   const lastRow = summary.getLastRow();
 
   summary
-    .getRange(1, lastCol, lastRow, 1)
-    .copyTo(summary.getRange(1, lastCol + 1, lastRow, 1), { formatOnly: true });
+    .getRange(1, 3, lastRow, 1)
+    .copyTo(summary.getRange(1, 2, lastRow, 1), { formatOnly: true });
 }
